@@ -14,7 +14,7 @@ Project Ideas
 9. missing square puzzle
 10. tower of hanoi
 11. simulations
-12. hypercubes
+12. hypercubes <br>
 13. arduino  
 14. sds  
 15. 
