@@ -16,3 +16,4 @@ Project Ideas
 11. simulations <br>
 12. hypercubes <br>
 13. arduino  <br>
+14. one liners (showcase power of CS) <br>
