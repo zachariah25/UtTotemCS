@@ -2,7 +2,7 @@ UtTotemCS
 =========
 
 The computer science section of the Imagine RIT Ut Totem project.
-Project Ideas
+Project Ideas <br>
 1. Fibbonacci spiral <br>
 2. julia sets\mandelbrot set\sierpinski gasket (fractals) <br>
 3. spiro graphs <br>
