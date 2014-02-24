@@ -17,4 +17,5 @@ Project Ideas <br>
 12. hypercubes <br>
 13. arduino  <br>
 14. one liners (showcase power of CS) <br>
-15. Quines
+15. Quines <br>
+16. color average to tone <br>
