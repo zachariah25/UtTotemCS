@@ -1,5 +1,6 @@
 UtTotemCS
 
+<p> The beauty of mathematics is hard to visualize. We wish to demonstrate it through computer science.</p>
 =========
 <h3>The computer science section of the Imagine RIT Ut Totem project.</h3>
 <br>
