@@ -1,6 +1,6 @@
 UtTotemCS
 
-<p> The beauty of mathematics is hard to visualize. We wish to demonstrate it through computer science.</p>
+<p> The beauty of mathematical concepts is often difficult to appreciate, let alone visualize. But through the use of technology and computer science, programming can be utilized to express the subtle artistry of math and bring its abstract concepts down to reality. </p>
 =========
 <h3>The computer science section of the Imagine RIT Ut Totem project.</h3>
 <br>
