@@ -30,3 +30,14 @@ UtTotemCS
 <li> one liners (showcase power of CS) </li>
 <li> color average to tone </li>
 </ol>
+
+<ul>
+	<li> 2 power strips </li>
+	<li>3 hdmi cables </li>
+	<li> 4 monitors with HDMI (24 inches) touchscreen?</li>
+	<li>4 keyboards</li>
+	<li>4 mice </li>
+	<li> 2 android tablets  (nice)</li>
+	<li> projector (would be nice)</li>
+	
+</ul>
