@@ -1,0 +1,13 @@
+
+body {
+  margin: 0;
+  padding:0px;
+  text-align: center;
+}
+svg
+{
+	background-color: #87CEEB;
+	margin:0px auto;
+	margin-top:25px;
+	box-shadow: 0 0 25px rgba(0,0,0,.8);
+}
