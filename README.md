@@ -2,6 +2,7 @@ UtTotemCS
 
 <p> The beauty of mathematical concepts is often difficult to appreciate, let alone visualize. But through the use of technology and computer science, programming can be utilized to express the subtle artistry of math and bring its abstract concepts down to reality. </p>
 =========
+<h3>see progress on the <a href = 'http://zachariah25.github.io/UtTotemCS/cloudSim/index.html'>cloud simulator</a></h3>
 <h3>The computer science section of the Imagine RIT Ut Totem project.</h3>
 <br>
 <h2>Project Ideas </h2>
