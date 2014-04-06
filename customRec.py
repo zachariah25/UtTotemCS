@@ -13,9 +13,11 @@ def main():
 	hideturtle()
 	speed(0)
 	left(90)
-	back(l)
-	drawTree(l, d)
-	input("Enter to close... ")
+	try:
+		drawTree(l, d)
+	except:
+		pass
+	input()
 	bye()
 
 main()

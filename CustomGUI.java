@@ -1,54 +1,43 @@
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.Math;
+import javax.swing.BoxLayout;
 import javax.swing.*;
 
-class GUI extends JFrame {
+class CustomGUI extends JFrame {
 
-	// All commands the user can see
-	// First string is user-visible title, second is shell command
-	public static final String[][] CMDS = {
-		{"Spirograph", "python spiro.py"},
-		{"Recursive tree", "python drawTree.py"},
-		{"Recursive square", "python squareRec.py"},
-		{"Recursive I-shaped drawing", "python iTree.py"},
-		{"Write your own!", "java CustomGUI"}
-	};
+	public static String cmd = "forward(length)\nleft(length)\nforward(length)\ndrawTree(length / 2, depth - 1)\nback(length)\nright(length)\nback(length)\n";
 
 	// Initialize the frame
-	public GUI () {
+	public CustomGUI () {
 		setTitle("Ut Totem - Computer Science project");
 		setSize(600, 600);
 		setLocation(10,200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		addButtons();
+		addButtons(this.getContentPane());
 	}
 
-	public void addButtons() {
-		// Calculate how man row / columns we need
-		int dim = (int) (Math.sqrt(CMDS.length) + 1);
+	public void addButtons(Container pane) {
+
 		// Set layout
-		setLayout(new GridLayout(dim, dim));
+		setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
 		JButton btn;
-		for (final String[] cmd: CMDS) {
-			// Initialize button with user-visible name
-			btn = new JButton(cmd[0]);
+		btn = new JButton("Run program");
 
-			// Register the button's on click listener (the command to exec)
-			btn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					executeCommand(cmd[1]);
-				}
-			});
+		// Register the button's on click listener (the command to exec)
+		btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				executeCommand("python3 customRec.py 100 3 \"" + cmd + "\"");
+			}
+		});
 
-			// Add this button to the layout
-			add(btn);
-		}
+		// Add this button to the layout
+		pane.add(btn);
 	}
 
 	// Executes the shell command given
@@ -78,6 +67,6 @@ class GUI extends JFrame {
 
 	// Sets up GUI and shows it to the user
 	public static void main(String[] args) {
-		(new GUI()).show();
+		(new CustomGUI()).show();
 	}
 }
