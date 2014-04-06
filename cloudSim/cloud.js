@@ -9,14 +9,14 @@ General notes
 
 */
 
-var cloudParticleRadius = 20,
-	numCloudParticles   = 100,
+var cloudParticleRadius = 6,
+	numCloudParticles   = 500,
 	cloudParticles      = [],
 	svgHeight           = Math.max(500, innerHeight)-50,
 	svgWidth     	    = Math.max(960, innerWidth)-50,	
 	iterTime			= 1,//length of an iteration cycle in ms
-	rayWidth            = 1,
-	raySpeed			= 5,//ray speed in px per iteration
+	rayWidth            = 3,
+	raySpeed			= 8,//ray speed in px per iteration
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
 	svg                 = d3.select("body").append("svg")// add the svg element to body
@@ -87,11 +87,10 @@ function replot()
 				ySeperation = Math.abs(rayY-cloudParticleY);
 			if (xSeperation<cloudParticleRadius && ySeperation<cloudParticleRadius)
 			{
-				
-				rayData[i].lineData.push({x:rayX+(6-(rayX-cloudParticleX)*2),y:rayY+raySpeed})
+				rayData[i].lineData.push({x:rayX-(cloudParticleRadius+(rayX-cloudParticleX)),y:rayY})
 			}
 		};
-
+		len  = rayData[i].lineData.length-1
 		rayData[i].lineData[len].y+=raySpeed
 
 		// if the rayhits the bottom of the svg then leave it there as a little marker (color observation)
@@ -131,7 +130,7 @@ function cartToPol(coordinates)
 	x              = coordinates.x
 	y              = coordinates.y
 	r              = Math.sqrt(Math.pow(x,2)+Math.pow(y,2))
-	theta          = Math.atan(y/x)
+	theta          = Math.atan2(y,x)
 	newCoordinates = {r:r,theta:theta}
 	return(newCoordinates)
 }
