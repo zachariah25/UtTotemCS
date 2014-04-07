@@ -15,7 +15,8 @@ class GUI extends JFrame {
 		{"Spirograph", "python spiro.py"},
 		{"Recursive tree", "python drawTree.py"},
 		{"Recursive square", "python squareRec.py"},
-		{"Recursive I-shaped drawing", "python iTree.py"}
+		{"Recursive I-shaped drawing", "python iTree.py"},
+		{"Write your own!", "java CustomGUI"}
 	};
 
 	// Initialize the frame
@@ -29,7 +30,7 @@ class GUI extends JFrame {
 
 	public void addButtons() {
 		// Calculate how man row / columns we need
-		int dim = (int) (Math.sqrt(CMDS.length) + 0.5);
+		int dim = (int) (Math.sqrt(CMDS.length) + 1);
 		// Set layout
 		setLayout(new GridLayout(dim, dim));
 
