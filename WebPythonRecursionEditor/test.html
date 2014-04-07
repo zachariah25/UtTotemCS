@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+<script src="jquery.js"></script>
+<script src="sortable.js"></script>
+<div>    
+    <list id="cmdList">
+        <li>forward</li>
+        <li>backward</li>
+    </list>
+    
+    <p>hello</p>
+    
+    <list id="selectedCmdList"></list>
+    
+</div>
+
+<script>
+
+window.onload = function() {
+    var cmdList = document.getElementById("cmdList");
+    var selectedCmdList = document.getElementById("selectedCmdList");
+
+    // For IE / other platform support
+    var text = "textContent" in document ? "textContent" : "innerText";
+
+    // create new li element
+    var selectedCmd = document.createElement("li");
+    
+    //create new text node
+    var cmdToAddValue = document.createTextNode(cmdList.children[0][text]);
+    
+    // add text node to li element
+    selectedCmd.appendChild(cmdToAddValue);
+    
+    // add new list element to selectedCmdList
+    selectedCmdList.appendChild(cmdToAddValue);
+
+    $('.sortable').sortable();
+}
+</script>
+
+</head>
