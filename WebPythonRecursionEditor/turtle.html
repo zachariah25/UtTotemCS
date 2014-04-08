@@ -2,7 +2,18 @@
 
 <html lang="en">
 <head>
+	<!-- Mobile Specific Metas
+  ================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<!-- CSS
+  ================================================== -->
+	<link rel="stylesheet" href="stylesheets/base.css">
+	<link rel="stylesheet" href="stylesheets/skeleton.css">
+	<link rel="stylesheet" href="stylesheets/layout.css">
+
 	<link href="jquery-ui.css" rel="stylesheet" type="text/css">
+	<link href="style.css" rel="stylesheet" type="text/css">
 
 	<title>Turtle Wax -- Logo-ish Turtle Graphics for HTML5 Canvas</title>
 	<script src="jquery.js"></script>
@@ -27,63 +38,26 @@
 
 </head>
 
-<style>
-	body { margin: 0; padding: 0; background: #fff; color: #000; font: 15px Helvetica; }
-	p { margin-left: 10px; }
-	a { color: #006; }
-	ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 20px; }
-	li { margin: 5px; padding: 5px; width: 150px; border: 1px solid black; }
-
-	#commandList, #selectedList { list-style-type: none; margin: 0; padding: 0 0 2.5em; float: left; margin-right: 10px; }
-  	#commandList li, #selectedList li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; width: 120px; }
-
-
-	div {
-	    display: block;
-	}
-	#wrapper {
-	    width: 800px;
-	    height:800px;
-	}
-
-	#first {
-	    float:left;
-	    width: 33%;
-	    height: 100%;
-	    background: red;
-	}
-
-	#second {
-	    float:left;
-	    width: 67%;
-	    height: 30%;
-	    background: green;
-	}
-
-	#third {
-	    float:left;
-	    width: 67%;
-	    height: 750%;
-	    background: blue;
-	}
-
-</style>
-
 <body>
 
-<p><a href="http://github.com/zachariah25/UtTotemCS">Hosted on GitHub</a> by Zach Lauzon</p>
 
-<div id="wrapper">
-    <div id="first">
+<div class="container">
+	<p><h1>Write your own recursion!</h1></p>
+
+    <div class="one-third column">
+    	<p><h2>Available commands</h2></p>
     	<ul id="commandList" class="connectedSortable"></ul>
     </div>
-    <div id="second">
+    <div class="one-third column">
+    	<p><h2>Drag commands here</h2></p>
     	<ul id="selectedList" class="connectedSortable">
   			<li class="ui-state-highlight">p.go(length);</li>
 		</ul>
-		<button onclick="drawOnCanvas()" type="button">Click Me!</button>
+		
 	</div>
-    <div id="third">
+    <div class="one-third column">
+    	<p><h2>Run it!</h2></p>
+    	<button onclick="drawOnCanvas()" type="button">Click Me!</button>
     	<canvas id="mycanvas" height="600" width="800">
     </div>
 </div>
