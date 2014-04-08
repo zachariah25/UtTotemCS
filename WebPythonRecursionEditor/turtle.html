@@ -2,68 +2,173 @@
 
 <html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Turtle Wax -- Logo-ish Turtle Graphics for HTML5 Canvas</title>
-	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
-	<meta name="format-detection" content="false">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-</head>
-<body>
+	<link href="jquery-ui.css" rel="stylesheet" type="text/css">
 
-<p>A demo of an open source project <a href="http://github.com/davebalmer/turtlewax">hosted on GitHub</a> by Dave Balmer</p>
-<canvas id="mycanvas" height="600" width="800">
+	<title>Turtle Wax -- Logo-ish Turtle Graphics for HTML5 Canvas</title>
+	<script src="jquery.js"></script>
+	<script src="jquery-ui.js"></script>
+  	
+	<script>
+
+	$(function() {
+	    $(".draggable").draggable({
+	        connectToSortable: "#selectedList",
+	        helper: "clone",
+	        revert: "invalid"
+	    });
+	    $("#selectedList").sortable({
+	        
+	        revert: true
+	    });
+	    $("ul, li").disableSelection();
+	});
+
+  	</script>
+
+</head>
 
 <style>
 	body { margin: 0; padding: 0; background: #fff; color: #000; font: 15px Helvetica; }
 	p { margin-left: 10px; }
 	a { color: #006; }
+	ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 20px; }
+	li { margin: 5px; padding: 5px; width: 150px; border: 1px solid black; }
+
+	#commandList, #selectedList { list-style-type: none; margin: 0; padding: 0 0 2.5em; float: left; margin-right: 10px; }
+  	#commandList li, #selectedList li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; width: 120px; }
+
+
+	div {
+	    display: block;
+	}
+	#wrapper {
+	    width: 800px;
+	    height:800px;
+	}
+
+	#first {
+	    float:left;
+	    width: 33%;
+	    height: 100%;
+	    background: red;
+	}
+
+	#second {
+	    float:left;
+	    width: 67%;
+	    height: 30%;
+	    background: green;
+	}
+
+	#third {
+	    float:left;
+	    width: 67%;
+	    height: 750%;
+	    background: blue;
+	}
+
 </style>
+
+<body>
+
+<p><a href="http://github.com/zachariah25/UtTotemCS">Hosted on GitHub</a> by Zach Lauzon</p>
+
+<div id="wrapper">
+    <div id="first">
+    	<ul id="commandList" class="connectedSortable"></ul>
+    </div>
+    <div id="second">
+    	<ul id="selectedList" class="connectedSortable">
+  			<li class="ui-state-highlight">p.go(length);</li>
+		</ul>
+		<button onclick="drawOnCanvas()" type="button">Click Me!</button>
+	</div>
+    <div id="third">
+    	<canvas id="mycanvas" height="600" width="800">
+    </div>
+</div>
+
 
 <!-- including the lib and an rgb to hsv color util function -->
 <script src="pen.js"></script>
 <script src="hsv.js"></script>
 
+
 <script>
 	var p = new Pen("mycanvas");
+
+	var cmds = new Array();
+	cmds[0] = "p.go(length);"					// forward
+	cmds[1] = "p.go(-length);"					// backward
+	cmds[2] = "p.turn(90);"						// turn right 90
+	cmds[3] = "p.turn(-90);"					// turn left 90
+	cmds[4] = "p.turtle(depth-1,length/2);"		// recurse
 	
-	// make a foot (or a head)
-	p.foot = function(angle, body, length, width) {
-		return this.polar(length, angle).arc(angle, angle + width, length, 1).polar(body, angle + width);
-	};
-		
-	// quickie arc drawing function
-	p.arc = function(from, to, distance, res) {
-		var res = res || 1;
-		for (var i = from; i < to; i += res)
-			this.polar(distance, i);
-		
-		return this;
-	};
+	
+
+    // Get command list reference
+	var cmdList = document.getElementById("commandList");
+
+	var listElement;
+	var cmdToAddValue;
+
+	// Let's add these commands to the list
+	for (var i = 0; i < cmds.length; i++) {
+		listElement = document.createElement("li");
+		listElement.setAttribute('class', 'draggable ui-state-default');
+		cmdToAddValue = document.createTextNode(cmds[i]);
+		listElement.appendChild(cmdToAddValue);
+		cmdList.appendChild(listElement);
+	}
+
 
 	// actual drawing code
 	p.turtle = function(depth, length) {
+
 		if (depth <= 0) {
 			return;
 		}
 
+		// For IE / other platform support
+    	var text = "textContent" in document ? "textContent" : "innerText";
+
+		var cmdsToExecuteList = document.getElementById("selectedList");
+		var cmdsToExecute = cmdsToExecuteList.getElementsByTagName("li");
+
+		for (var i = 0; i < cmdsToExecute.length; i++) {
+			eval(cmdsToExecute[i][text]);
+		}
+
+		/*
 		p.turn(90)
 		p.go(length);
-		p.turtle(depth - 1, length / 2);
+		p.turtle(depth-1,length/2);
 		p.go(-(length))
 		p.turn(-90);
+		*/
+
+
+		/*
+		eval(cmds[2]);
+		eval(cmds[0]);
+		eval(cmds[4]);
+		eval(cmds[1]);
+		eval(cmds[3]);
+		*/
 	};
-	
-	// start our drawing
-	p.goto(200, 200).fillstyle("#fff");
-	p.origin().pendown();
 
-	p.turtle(3, 100);
+	function drawOnCanvas() {
+		// clear canvas and go to origin
+		//ctx.clearRect(0,0,canvas.width,canvas.height)
+		p.goto(200, 200).fillstyle("#fff");
+		p.origin().pendown();
 
-	p.close().draw();
+		// start our drawing
+		p.turtle(7, 200);
 
+		p.close().draw();
+	}
 	
 </script>
-
 </body>
 </html>

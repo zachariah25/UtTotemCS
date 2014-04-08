@@ -1,0 +1,38 @@
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script src="sortable.js"></script>
+</head>
+
+<body>
+<ul id="list1">
+    <li id="ul_item_1">item-1</li>
+    <li id="ul_item_2">item-2</li>
+    <li id="ul_item_3">item-3</li>
+</ul>
+<br>
+<br>
+<ul id="list2">
+    <li id="ul_item_4">item-4</li>
+    <li id="ul_item_5">item-5</li>
+    <li id="ul_item_6">item-6</li>
+</ul>
+</body>
+
+<script>
+$(document).ready(function() {
+        
+        $( "#list1 li" ).draggable({
+    appendTo: "body",
+    helper: "clone",
+    connectToSortable: '#list2'
+});
+
+$( "#list2" ).droppable({accept: "#list1 li"}).sortable({
+    stop: function(){
+        var order = $("#list2").sortable('toArray');
+        alert( order );
+    }
+}).disableSelection();
+
+    });
+</script>
