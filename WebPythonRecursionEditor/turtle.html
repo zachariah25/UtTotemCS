@@ -15,12 +15,11 @@
 	<link href="jquery-ui.css" rel="stylesheet" type="text/css">
 	<link href="style.css" rel="stylesheet" type="text/css">
 
-	<title>Turtle Wax -- Logo-ish Turtle Graphics for HTML5 Canvas</title>
+	<title>Recursion Editor</title>
 	<script src="jquery.js"></script>
 	<script src="jquery-ui.js"></script>
   	
 	<script>
-
 	$(function() {
 	    $(".draggable").draggable({
 	        connectToSortable: "#selectedList",
@@ -28,16 +27,35 @@
 	        revert: "invalid"
 	    });
 	    $("#selectedList").sortable({
-	        
-	        revert: true
-	    });
+	        over: function () {
+                removeIntent = false;
+            },
+            out: function () {
+                removeIntent = true;
+            },
+            beforeStop: function (event, ui) {
+                if(removeIntent == true){
+                    ui.item.remove();   
+                }
+            }
+	    }).droppable({greedy: true});
 	    $("ul, li").disableSelection();
 	});
 
+	$(function() {
+		$( "#slider-range-min" ).slider({
+		  range: "min",
+		  value: 4,
+		  min: 1,
+		  max: 30,
+		  slide: function( event, ui ) {
+		    $( "#amount" ).val( ui.value );
+		  }
+		});
+		$( "#amount" ).val( $( "#slider-range-min" ).slider( "value" ) );
+	});
   	</script>
-
 </head>
-
 <body>
 
 
@@ -57,7 +75,17 @@
 	</div>
     <div class="one-third column">
     	<p><h2>Run it!</h2></p>
-    	<button onclick="drawOnCanvas()" type="button">Click Me!</button>
+
+		<p>
+		<label for="amount">Recursion depth:</label>
+		<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+		</p>
+
+		<div id="slider-range-min"></div>
+
+    	<br><br>
+    	<button onclick="drawOnCanvas()" class="full-width button">Run it!</button>
+    	<button onclick="animateDrawOnCanvas()" class="full-width button">Super run it!</button>
     	<canvas id="mycanvas" height="600" width="800">
     </div>
 </div>
@@ -71,30 +99,29 @@
 <script>
 	var p = new Pen("mycanvas");
 
-	var cmds = new Array();
-	cmds[0] = "p.go(length);"					// forward
-	cmds[1] = "p.go(-length);"					// backward
-	cmds[2] = "p.turn(90);"						// turn right 90
-	cmds[3] = "p.turn(-90);"					// turn left 90
-	cmds[4] = "p.turtle(depth-1,length/2);"		// recurse
+	var cmds = { 
+		"forward": "p.go(length);",
+		"backward": "p.go(-length);",
+		"left 90 degrees": "p.turn(90);",
+		"right 90 degrees": "p.turn(-90);",
+		"left 45 degrees": "p.turn(45);",
+		"right 45 degrees": "p.turn(-45);",
+		"recurse": "p.turtle(depth-1,length/2);"
+	};
 	
-	
-
     // Get command list reference
 	var cmdList = document.getElementById("commandList");
 
 	var listElement;
 	var cmdToAddValue;
 
-	// Let's add these commands to the list
-	for (var i = 0; i < cmds.length; i++) {
+	$.each(cmds, function(key, value) {
 		listElement = document.createElement("li");
 		listElement.setAttribute('class', 'draggable ui-state-default');
-		cmdToAddValue = document.createTextNode(cmds[i]);
+		cmdToAddValue = document.createTextNode(key);
 		listElement.appendChild(cmdToAddValue);
 		cmdList.appendChild(listElement);
-	}
-
+	});
 
 	// actual drawing code
 	p.turtle = function(depth, length) {
@@ -110,37 +137,51 @@
 		var cmdsToExecute = cmdsToExecuteList.getElementsByTagName("li");
 
 		for (var i = 0; i < cmdsToExecute.length; i++) {
-			eval(cmdsToExecute[i][text]);
+			eval(cmds[cmdsToExecute[i][text]]);
+			//p.draw();
 		}
-
-		/*
-		p.turn(90)
-		p.go(length);
-		p.turtle(depth-1,length/2);
-		p.go(-(length))
-		p.turn(-90);
-		*/
-
-
-		/*
-		eval(cmds[2]);
-		eval(cmds[0]);
-		eval(cmds[4]);
-		eval(cmds[1]);
-		eval(cmds[3]);
-		*/
 	};
 
 	function drawOnCanvas() {
-		// clear canvas and go to origin
-		//ctx.clearRect(0,0,canvas.width,canvas.height)
-		p.goto(200, 200).fillstyle("#fff");
+		// initialize turtle to origin
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#fff");
 		p.origin().pendown();
 
-		// start our drawing
-		p.turtle(7, 200);
+		// get recursion depth value from slider
+		var value = $( "#slider-range-min" ).slider( "value" );
+		if (value < 0 || value > 30) {
+			value = 4;
+		}
 
-		p.close().draw();
+		// start our drawing
+		p.turtle(value, 100);
+
+		p.draw();
+	}
+
+	// draw + delay between each level of recursion
+	function animateDrawOnCanvas() {
+		// get recursion depth value from slider
+		var value = $( "#slider-range-min" ).slider( "value" );
+		if (value < 0 || value > 30) {
+			value = 4;
+		}
+
+
+		// goto origin
+		p.goto(screen.availWidth / 10, screen.availHeight / 3).fillstyle("#fff");
+		p.origin().pendown();
+
+		(function myLoop (i, max) {          
+			setTimeout(function () {
+
+				// start our drawing
+				p.turtle(i, 100);         //  your code here
+				p.close().draw();
+
+			  	if (++i <= max) myLoop(i, max);      //  decrement i and call myLoop again if i > 0
+		   }, 500)
+		})(1, value);                        //  pass the number of iterations as an argument	
 	}
 	
 </script>

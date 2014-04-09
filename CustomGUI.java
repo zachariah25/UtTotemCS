@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 class CustomGUI extends JFrame implements ActionListener {
 
-	public static String cmd = "python3 customRec.py";
+	public static String cmd = "python customRec.py";
 	public static String length = "100";
 	public static String depth = "5";
 
@@ -104,8 +104,8 @@ class CustomGUI extends JFrame implements ActionListener {
 		btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				args = "";
-				for (String cmd: selectedCommands) {
-					args += cmd + " ";
+				for (String s: selectedCommands) {
+					args += s + " ";
 				}
 				executeCommand(cmd + " " + length + " " + depth + " " + args);
 			}
