@@ -47,7 +47,7 @@
 		  range: "min",
 		  value: 4,
 		  min: 1,
-		  max: 30,
+		  max: 15,
 		  slide: function( event, ui ) {
 		    $( "#amount" ).val( ui.value );
 		  }
@@ -102,11 +102,19 @@
 	var cmds = { 
 		"forward": "p.go(length);",
 		"backward": "p.go(-length);",
+		"turn around": "p.turn(180);",
 		"left 90 degrees": "p.turn(90);",
 		"right 90 degrees": "p.turn(-90);",
 		"left 45 degrees": "p.turn(45);",
 		"right 45 degrees": "p.turn(-45);",
-		"recurse": "p.turtle(depth-1,length/2);"
+		"left 30 degrees": "p.turn(30);",
+		"right 90 degrees": "p.turn(-30);",
+		"recurse": "p.turtle(depth-1,length/2);",
+		"square": "p.go(length);p.turn(90);p.go(length);p.turn(90);p.go(length);p.turn(90);p.go(length);p.turn(90);",
+		"triangle": "p.turn(-90);p.go(length/2);p.turn(120);p.go(length);p.turn(120);p.go(length);p.turn(120);p.go(length/2);p.turn(90);",
+		"pen up": "p.penup();",
+		"pen down": "p.pendown();",
+		"magenta": "p.penstyle('#FF00FF');"
 	};
 	
     // Get command list reference
@@ -169,7 +177,7 @@
 
 
 		// goto origin
-		p.goto(screen.availWidth / 10, screen.availHeight / 3).fillstyle("#fff");
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#fff");
 		p.origin().pendown();
 
 		(function myLoop (i, max) {          
@@ -180,7 +188,7 @@
 				p.close().draw();
 
 			  	if (++i <= max) myLoop(i, max);      //  decrement i and call myLoop again if i > 0
-		   }, 500)
+		   }, 300)
 		})(1, value);                        //  pass the number of iterations as an argument	
 	}
 	
