@@ -90,7 +90,7 @@
 		<p>
 
 		<label for="autoDraw">
-      		<input type="checkbox" id="autoDraw" value="checkbox 1" />
+      		<input type="checkbox" id="autoDraw" value="autoDraw" checked/>
       		<span>Automatically draw</span>
     	</label>
 
@@ -156,7 +156,7 @@
 
 	// actual drawing code
 	p.turtle = function(depth, length) {
-
+		// base case
 		if (depth <= 0) {
 			return;
 		}
@@ -173,16 +173,16 @@
 	};
 
 	function drawOnCanvas() {
-		// initialize turtle to origin
-		context.clearRect(0, 0, canvas.width, canvas.height);
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef");
-		p.origin().pendown();
-
 		// get recursion depth value from slider
 		var value = $( "#slider-range-min" ).slider( "value" );
-		if (value < 0 || value > 30) {
+		if (value < 0 || value > 15) {
 			value = 4;
 		}
+
+		// initialize turtle to origin
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").penstyle("#000");
+		p.origin().pendown();
 
 		// start our drawing
 		p.turtle(value, 100);
@@ -197,21 +197,19 @@
 			value = 4;
 		}
 
-
 		// goto origin
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef");
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").pencolor("#000");
 		p.origin().pendown();
 
 		(function animateLoop (i, max) {          
 			setTimeout(function () {
-
 				// start our drawing
-				p.turtle(i, 100);         //  your code here
+				p.turtle(i, 100);
 				p.draw();
-
-			  	if (++i <= max) animateLoop(i, max);      //  decrement i and call myLoop again if i > 0
+			  	if (++i <= max) animateLoop(i, max);
 		   }, 300)
-		})(1, value);                        //  pass the number of iterations as an argument	
+		})(1, value);
 	}
 	
 </script>
