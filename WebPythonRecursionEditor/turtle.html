@@ -37,6 +37,11 @@
                 if(removeIntent == true){
                     ui.item.remove();   
                 }
+            },
+            stop: function() {
+            	if ($("#autoDraw").is(':checked')) {
+            		drawOnCanvas();
+            	}
             }
 	    }).droppable({greedy: true});
 	    $("ul, li").disableSelection();
@@ -69,7 +74,13 @@
     <div class="one-third column">
     	<p><h2>Drag commands here</h2></p>
     	<ul id="selectedList" class="connectedSortable">
-  			<li class="ui-state-highlight">p.go(length);</li>
+  			<li class="ui-state-default">forward</li>
+  			<li class="ui-state-default">left 45 degrees</li>
+  			<li class="ui-state-default">recurse</li>
+  			<li class="ui-state-default">right 90 degrees</li>
+  			<li class="ui-state-default">recurse</li>
+  			<li class="ui-state-default">left 45 degrees</li>
+  			<li class="ui-state-default">backward</li>
 		</ul>
 		
 	</div>
@@ -77,6 +88,12 @@
     	<p><h2>Run it!</h2></p>
 
 		<p>
+
+		<label for="autoDraw">
+      		<input type="checkbox" id="autoDraw" value="checkbox 1" />
+      		<span>Automatically draw</span>
+    	</label>
+
 		<label for="amount">Recursion depth:</label>
 		<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
 		</p>
@@ -99,16 +116,22 @@
 <script>
 	var p = new Pen("mycanvas");
 
+	// grab canvas and context reference
+	var canvas = document.getElementById('mycanvas');
+    var context = canvas.getContext('2d');
+
 	var cmds = { 
 		"forward": "p.go(length);",
+		"forward half": "p.go(length/2);",
 		"backward": "p.go(-length);",
+		"backward half": "p.go(-length/2);",
 		"turn around": "p.turn(180);",
-		"left 90 degrees": "p.turn(90);",
-		"right 90 degrees": "p.turn(-90);",
-		"left 45 degrees": "p.turn(45);",
-		"right 45 degrees": "p.turn(-45);",
-		"left 30 degrees": "p.turn(30);",
-		"right 90 degrees": "p.turn(-30);",
+		"left 90 degrees": "p.turn(-90);",
+		"right 90 degrees": "p.turn(90);",
+		"left 45 degrees": "p.turn(-45);",
+		"right 45 degrees": "p.turn(45);",
+		"left 30 degrees": "p.turn(-30);",
+		"right 30 degrees": "p.turn(30);",
 		"recurse": "p.turtle(depth-1,length/2);",
 		"square": "p.go(length);p.turn(90);p.go(length);p.turn(90);p.go(length);p.turn(90);p.go(length);p.turn(90);",
 		"triangle": "p.turn(-90);p.go(length/2);p.turn(120);p.go(length);p.turn(120);p.go(length);p.turn(120);p.go(length/2);p.turn(90);",
@@ -146,13 +169,13 @@
 
 		for (var i = 0; i < cmdsToExecute.length; i++) {
 			eval(cmds[cmdsToExecute[i][text]]);
-			//p.draw();
 		}
 	};
 
 	function drawOnCanvas() {
 		// initialize turtle to origin
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#fff");
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef");
 		p.origin().pendown();
 
 		// get recursion depth value from slider
@@ -163,7 +186,6 @@
 
 		// start our drawing
 		p.turtle(value, 100);
-
 		p.draw();
 	}
 
@@ -177,17 +199,17 @@
 
 
 		// goto origin
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#fff");
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef");
 		p.origin().pendown();
 
-		(function myLoop (i, max) {          
+		(function animateLoop (i, max) {          
 			setTimeout(function () {
 
 				// start our drawing
 				p.turtle(i, 100);         //  your code here
-				p.close().draw();
+				p.draw();
 
-			  	if (++i <= max) myLoop(i, max);      //  decrement i and call myLoop again if i > 0
+			  	if (++i <= max) animateLoop(i, max);      //  decrement i and call myLoop again if i > 0
 		   }, 300)
 		})(1, value);                        //  pass the number of iterations as an argument	
 	}

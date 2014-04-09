@@ -1,2 +1,2 @@
-#commandList, #selectedList { list-style-type: none; margin: 0; padding: 0 0 2.5em; float: left; margin-right: 10px; }
+#commandList, #selectedList { list-style-type: none; margin: 0; background: #FDFDFD; padding: 30px; float: left; margin-right: 10px; width: 220px}
 #commandList li, #selectedList li { margin: 5 5px 5px 5px; padding: 15px; font-size: 1.2em; width: 190px; }
