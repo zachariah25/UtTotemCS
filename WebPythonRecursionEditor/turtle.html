@@ -55,10 +55,24 @@
 		  max: 15,
 		  slide: function( event, ui ) {
 		    $( "#amount" ).val( ui.value );
+		    if ($("#autoDraw").is(':checked')) {
+            	drawOnCanvas();
+            }
+		  },
+		  change: function( event, ui) {
+		  	if ($("#autoDraw").is(':checked')) {
+            	drawOnCanvas();
+            }
 		  }
 		});
 		$( "#amount" ).val( $( "#slider-range-min" ).slider( "value" ) );
 	});
+
+	// draw initial set of commands after page loads
+	$(document).ready(function () {
+		drawOnCanvas();
+	});
+
   	</script>
 </head>
 <body>
@@ -137,15 +151,23 @@
 		"triangle": "p.turn(-90);p.go(length/2);p.turn(120);p.go(length);p.turn(120);p.go(length);p.turn(120);p.go(length/2);p.turn(90);",
 		"pen up": "p.penup();",
 		"pen down": "p.pendown();",
-		"magenta": "p.penstyle('#FF00FF');"
+		"magenta": "p.penstyle('#FF00FF');",
+		"recursive tree": "p.go(length);p.turn(-45);p.turtle(depth-1,length/2);p.turn(90);p.turtle(depth-1,length/2);p.turn(-45);p.go(-length);"
 	};
 	
-    // Get command list reference
+    // get refence to list of all commands
 	var cmdList = document.getElementById("commandList");
+
+	// get reference to list of commands to execute
+	var cmdsToExecute = document.getElementById("selectedList").getElementsByTagName("li");
+
+	// For IE / other platform support
+    var text = "textContent" in document ? "textContent" : "innerText";
 
 	var listElement;
 	var cmdToAddValue;
 
+	// load values of available commands list
 	$.each(cmds, function(key, value) {
 		listElement = document.createElement("li");
 		listElement.setAttribute('class', 'draggable ui-state-default');
@@ -154,18 +176,20 @@
 		cmdList.appendChild(listElement);
 	});
 
-	// actual drawing code
+	// returns the current value selected by the recursion depth slider
+	function getCurrentDepthValue() {
+		var value = $( "#slider-range-min" ).slider( "value" );
+		if (value < 0 || value > 30) {
+			value = 4;
+		}
+		return value;
+	}
+	// execute the commands selected in the drag commands here list
 	p.turtle = function(depth, length) {
 		// base case
 		if (depth <= 0) {
 			return;
 		}
-
-		// For IE / other platform support
-    	var text = "textContent" in document ? "textContent" : "innerText";
-
-		var cmdsToExecuteList = document.getElementById("selectedList");
-		var cmdsToExecute = cmdsToExecuteList.getElementsByTagName("li");
 
 		for (var i = 0; i < cmdsToExecute.length; i++) {
 			eval(cmds[cmdsToExecute[i][text]]);
@@ -174,33 +198,26 @@
 
 	function drawOnCanvas() {
 		// get recursion depth value from slider
-		var value = $( "#slider-range-min" ).slider( "value" );
-		if (value < 0 || value > 15) {
-			value = 4;
-		}
+		var depth = getCurrentDepthValue();
 
-		// initialize turtle to origin
+		// set the turtle up at the origin facing north, with a clean canvas
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").penstyle("#000");
-		p.origin().pendown();
+		p.origin().angle(0).pendown();
 
 		// start our drawing
-		p.turtle(value, 100);
+		p.turtle(depth, 100);
 		p.draw();
 	}
 
 	// draw + delay between each level of recursion
 	function animateDrawOnCanvas() {
 		// get recursion depth value from slider
-		var value = $( "#slider-range-min" ).slider( "value" );
-		if (value < 0 || value > 30) {
-			value = 4;
-		}
+		var depth = getCurrentDepthValue();
 
-		// goto origin
 		context.clearRect(0, 0, canvas.width, canvas.height);
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").pencolor("#000");
-		p.origin().pendown();
+		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").penstyle("#000");
+		p.origin().angle(0).pendown();
 
 		(function animateLoop (i, max) {          
 			setTimeout(function () {
@@ -209,9 +226,8 @@
 				p.draw();
 			  	if (++i <= max) animateLoop(i, max);
 		   }, 300)
-		})(1, value);
+		})(1, depth);
 	}
-	
 </script>
 </body>
 </html>
