@@ -41,13 +41,17 @@
             stop: function() {
             	if ($("#autoDraw").is(':checked')) {
             		drawOnCanvas();
+            		//saveCustomDrawing("my first drawing");
             	}
             }
 	    }).droppable({greedy: true});
-	    $("ul, li").disableSelection();
-	});
 
-	$(function() {
+	    $("#savedDrawingsList").sortable({
+	        revert: true
+	    });
+
+	    $("ul, li").disableSelection();
+
 		$( "#slider-range-min" ).slider({
 		  range: "min",
 		  value: 4,
@@ -69,9 +73,12 @@
 	});
 
 	// draw initial set of commands after page loads
+	// plus load saved drawings
 	$(document).ready(function () {
 		drawOnCanvas();
-		saveCustomDrawing();
+		loadDrawingsList();
+		//saveCustomDrawing("my first drawing");
+		//loadCustomDrawing("my first drawing");
 	});
 
   	</script>
@@ -82,6 +89,10 @@
 <div class="container">
 	<p><h1>Write your own recursion!</h1></p>
 
+	<div class="one-third column">
+    	<p><h2>Saved drawings</h2></p>
+    	<ul id="savedDrawingsList" class="connectedSortable"></ul>
+    </div>
     <div class="one-third column">
     	<p><h2>Available commands</h2></p>
     	<ul id="commandList" class="connectedSortable"></ul>
@@ -118,6 +129,8 @@
     	<br><br>
     	<button onclick="drawOnCanvas()" class="full-width button">Run it!</button>
     	<button onclick="animateDrawOnCanvas()" class="full-width button">Super run it!</button>
+    	<button onclick="saveCustomDrawing('my first drawing')" class="full-width button">Save it!</button>
+    	<button onclick="loadCustomDrawing('my first drawing')" class="full-width button">Load it!</button>
     	<canvas id="mycanvas" height="600" width="800">
     </div>
 </div>
@@ -156,11 +169,13 @@
 		"recursive tree": "p.go(length);p.turn(-45);p.turtle(depth-1,length/2);p.turn(90);p.turtle(depth-1,length/2);p.turn(-45);p.go(-length);"
 	};
 	
-    // get refence to list of all commands
+    // get refence to command lists
 	var cmdList = document.getElementById("commandList");
+	var cmdsToExecuteList = document.getElementById("selectedList");
+	var savedDrawingsList = document.getElementById("savedDrawingsList");
 
 	// get reference to list of commands to execute
-	var cmdsToExecute = document.getElementById("selectedList").getElementsByTagName("li");
+	var cmdsToExecute = cmdsToExecuteList.getElementsByTagName("li");
 
 	// For IE / other platform support
     var text = "textContent" in document ? "textContent" : "innerText";
@@ -229,36 +244,102 @@
 		   }, 300)
 		})(1, depth);
 	}
-
 	
-	load = function () {
-  		return JSON.parse(localStorage["recursionEditor"]);
-	};
- 
-	save = function(obj) {
-		localStorage["recursionEditor"] = JSON.stringify(obj);
-	};
-	
-	function saveCustomDrawing() {
-
+	function saveCustomDrawing(name) {
 		// get data of current drawing into an array
-		var newDrawing = [];
+		var newDrawing = {};
 		$.each(cmdsToExecute, function(key, value) {
 			//alert(key + " : " + value[text]);
-			var obj = {key : value[text]};
-			newDrawing.push(obj);
+			//var obj = {key : value[text]};
+			newDrawing[key] = value[text];
 		});
-		
-		// push this new data onto local storage
-		var data = load();
-		data.push(newDrawing);
-		save(data);
 
-		loaded = load();
+		// get the object associated with this name if it exists
+		drawing = localStorage.getItem(name);
+		if (drawing == null || drawing == "null") {
+			//alert("hi, stranger");
+			localStorage.setItem(name, JSON.stringify(newDrawing));
+		} else {
+			//alert ("welcome back!");
+		}
 
-		// load values of available commands list
-		$.each(loaded, function(key, value) {
+		// refresh drawings list
+		loadDrawingsList();
+	}
+	
+	function loadCustomDrawing(name) {
+		// get the object associated with this name if it exists
+		drawing = JSON.parse(localStorage.getItem(name));
+		if (drawing == null || drawing == "null") {
+			alert("no drawing to load! should load default");
+			return; //TODO
+		}
+		//alert("drawing: " + JSON.stringify(drawing));
+		//cmdsToExecute.clean();
+		$("#selectedList").empty();
+		$.each(drawing, function(key, value) {
 			//alert(key + " : " + value);
+			listElement = document.createElement("li");
+			listElement.setAttribute('class', 'draggable ui-state-default');
+			cmdToAddValue = document.createTextNode(value);
+			listElement.appendChild(cmdToAddValue);
+			cmdsToExecuteList.appendChild(listElement);
+		});
+
+		// draw new drawing
+		drawOnCanvas();
+
+		/*
+		// load values of available commands list
+		$.each(cmds, function(key, value) {
+			listElement = document.createElement("li");
+			listElement.setAttribute('class', 'draggable ui-state-default');
+			cmdToAddValue = document.createTextNode(key);
+			listElement.appendChild(cmdToAddValue);
+			cmdList.appendChild(listElement);
+		});
+		*/
+	}
+
+	function deleteCustomDrawing(name) {
+		// get the object associated with this name if it exists
+		drawing = JSON.parse(localStorage.getItem(name));
+		if (drawing == null || drawing == "null") {
+			return; //TODO
+		}
+		
+		delete localStorage[name];
+
+		// refresh drawings list
+		loadDrawingsList();
+	}
+
+	function loadDrawingsList() {
+		// clear out current saved drawings list
+		$("#savedDrawingsList").empty();
+		$.each(localStorage, function(key, value) {
+			// create load drawing button
+			var drawButton = document.createElement("button");
+			drawButton.setAttribute('onclick', "loadCustomDrawing('" + key + "')");
+			drawButton.setAttribute('class', "full-width button");
+			drawButton.setAttribute('value', "full-width button");
+			drawButton.textContent = 'Load';
+
+			// create delete drawing button
+			var deleteButton = document.createElement("button");
+			deleteButton.setAttribute('onclick', "deleteCustomDrawing('" + key + "')");
+			deleteButton.setAttribute('class', "full-width button");
+			deleteButton.textContent = 'Delete';
+
+			// create list element
+			listElement = document.createElement("li");
+			listElement.setAttribute('class', 'draggable ui-state-default');
+			
+			// connect everything together
+			listElement.appendChild(document.createTextNode(key));
+			listElement.appendChild(drawButton);
+			listElement.appendChild(deleteButton);
+			savedDrawingsList.appendChild(listElement);
 		});
 	}
 	
