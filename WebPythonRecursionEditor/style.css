@@ -2,14 +2,13 @@
 	list-style-type: none;
 	margin: 0;
 	background: #FDFDFD;
-	padding: 25px; 
+	padding: 15px; 
 	float: left;
 	margin-right: 10px;
 	width: 180px
 }
 #commandList li, #selectedList li, #savedDrawingsList li {
-	margin: 5 5px 5px 5px;
-	padding: 15px;
+	padding: 13px;
 	font-size: 1.2em;
 	width: 150px;
 }

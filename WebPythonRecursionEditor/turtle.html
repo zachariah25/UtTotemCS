@@ -24,7 +24,8 @@
 	    $(".draggable").draggable({
 	        connectToSortable: "#selectedList",
 	        helper: "clone",
-	        revert: "invalid"
+	        revert: "invalid",
+	        scroll: true
 	    });
 	    $("#selectedList").sortable({
 	        over: function () {
@@ -77,11 +78,10 @@
 	$(document).ready(function () {
 		drawOnCanvas();
 		loadDrawingsList();
-		//saveCustomDrawing("my first drawing");
-		//loadCustomDrawing("my first drawing");
 	});
 
   	</script>
+
 </head>
 <body>
 
@@ -89,15 +89,12 @@
 <div class="container">
 	<p><h1>Write your own recursion!</h1></p>
 
-	<div class="one-third column">
-    	<p><h2>Saved drawings</h2></p>
-    	<ul id="savedDrawingsList" class="connectedSortable"></ul>
-    </div>
-    <div class="one-third column">
+    <div class="three columns">
     	<p><h2>Available commands</h2></p>
     	<ul id="commandList" class="connectedSortable"></ul>
     </div>
-    <div class="one-third column">
+
+    <div class="three columns">
     	<p><h2>Drag commands here</h2></p>
     	<ul id="selectedList" class="connectedSortable">
   			<li class="ui-state-default">forward</li>
@@ -108,30 +105,39 @@
   			<li class="ui-state-default">left 45 degrees</li>
   			<li class="ui-state-default">backward</li>
 		</ul>
-		
 	</div>
-    <div class="one-third column">
+
+	<div class="seven columns">
+		<canvas id="mycanvas" height = "960" width = "420">
+	</div>
+
+    <div class="three columns">
     	<p><h2>Run it!</h2></p>
 
 		<p>
-
 		<label for="autoDraw">
-      		<input type="checkbox" id="autoDraw" value="autoDraw" checked/>
-      		<span>Automatically draw</span>
+      		<span>
+      			Automatically draw
+      			<input type="checkbox" id="autoDraw" value="autoDraw" checked/>
+      		</span>
     	</label>
 
-		<label for="amount">Recursion depth:</label>
-		<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+		<span>
+			<label for="amount">Recursion depth:</label>
+			<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+		</span>
 		</p>
 
 		<div id="slider-range-min"></div>
 
     	<br><br>
     	<button onclick="drawOnCanvas()" class="full-width button">Run it!</button>
-    	<button onclick="animateDrawOnCanvas()" class="full-width button">Super run it!</button>
-    	<button onclick="saveCustomDrawing('my first drawing')" class="full-width button">Save it!</button>
-    	<button onclick="loadCustomDrawing('my first drawing')" class="full-width button">Load it!</button>
-    	<canvas id="mycanvas" height="600" width="800">
+    	<button onclick="animateDrawOnCanvas()" class="full-width button">Animate it!</button>
+    	<p><h4>Enter a name for your drawing:</h2></p>
+    	<input type="text" id="customName"/>
+    	<button onclick="saveCustomDrawing()" class="full-width button">Save it!</button>
+    	<p><h2>Saved drawings</h2></p>
+    	<ul id="savedDrawingsList" class="connectedSortable"></ul>
     </div>
 </div>
 
@@ -218,11 +224,11 @@
 
 		// set the turtle up at the origin facing north, with a clean canvas
 		context.clearRect(0, 0, canvas.width, canvas.height);
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").penstyle("#000");
+		p.goto(screen.availWidth / 8, screen.availHeight / 2).fillstyle("#faf8ef").penstyle("#000");
 		p.origin().angle(0).pendown();
 
 		// start our drawing
-		p.turtle(depth, 100);
+		p.turtle(depth, 120);
 		p.draw();
 	}
 
@@ -232,20 +238,29 @@
 		var depth = getCurrentDepthValue();
 
 		context.clearRect(0, 0, canvas.width, canvas.height);
-		p.goto(screen.availWidth / 10, screen.availHeight / 4).fillstyle("#faf8ef").penstyle("#000");
+		p.goto(screen.availWidth / 8, screen.availHeight / 2).fillstyle("#faf8ef").penstyle("#000");
 		p.origin().angle(0).pendown();
 
 		(function animateLoop (i, max) {          
 			setTimeout(function () {
 				// start our drawing
-				p.turtle(i, 100);
+				p.turtle(i, 120);
 				p.draw();
 			  	if (++i <= max) animateLoop(i, max);
 		   }, 300)
 		})(1, depth);
 	}
 	
-	function saveCustomDrawing(name) {
+	function saveCustomDrawing() {
+		// get name from text field
+		var name = $("#customName").val();
+		console.log("called saveCustomDrawing with " + name);
+		if (name == "") {
+			$("#customName").val("Please enter a name for your drawing");
+			console.log("name is empty, not saving");
+			return;
+		}
+
 		// get data of current drawing into an array
 		var newDrawing = {};
 		$.each(cmdsToExecute, function(key, value) {
@@ -254,31 +269,26 @@
 			newDrawing[key] = value[text];
 		});
 
-		// get the object associated with this name if it exists
-		drawing = localStorage.getItem(name);
-		if (drawing == null || drawing == "null") {
-			//alert("hi, stranger");
-			localStorage.setItem(name, JSON.stringify(newDrawing));
-		} else {
-			//alert ("welcome back!");
-		}
+		// save it
+		localStorage.setItem(name, JSON.stringify(newDrawing));
 
 		// refresh drawings list
 		loadDrawingsList();
+		console.log("finished saveCustomDrawing()");
 	}
 	
 	function loadCustomDrawing(name) {
+		console.log("called loadCustomDrawing with " + name);
 		// get the object associated with this name if it exists
 		drawing = JSON.parse(localStorage.getItem(name));
 		if (drawing == null || drawing == "null") {
 			alert("no drawing to load! should load default");
 			return; //TODO
 		}
-		//alert("drawing: " + JSON.stringify(drawing));
-		//cmdsToExecute.clean();
+
+		// re-load selected list values using saved data
 		$("#selectedList").empty();
 		$.each(drawing, function(key, value) {
-			//alert(key + " : " + value);
 			listElement = document.createElement("li");
 			listElement.setAttribute('class', 'draggable ui-state-default');
 			cmdToAddValue = document.createTextNode(value);
@@ -286,19 +296,11 @@
 			cmdsToExecuteList.appendChild(listElement);
 		});
 
+		// set name of drawing in text field
+		$("#customName").val(name);
+
 		// draw new drawing
 		drawOnCanvas();
-
-		/*
-		// load values of available commands list
-		$.each(cmds, function(key, value) {
-			listElement = document.createElement("li");
-			listElement.setAttribute('class', 'draggable ui-state-default');
-			cmdToAddValue = document.createTextNode(key);
-			listElement.appendChild(cmdToAddValue);
-			cmdList.appendChild(listElement);
-		});
-		*/
 	}
 
 	function deleteCustomDrawing(name) {
@@ -322,7 +324,6 @@
 			var drawButton = document.createElement("button");
 			drawButton.setAttribute('onclick', "loadCustomDrawing('" + key + "')");
 			drawButton.setAttribute('class', "full-width button");
-			drawButton.setAttribute('value', "full-width button");
 			drawButton.textContent = 'Load';
 
 			// create delete drawing button
@@ -342,7 +343,6 @@
 			savedDrawingsList.appendChild(listElement);
 		});
 	}
-	
 </script>
 </body>
 </html>
