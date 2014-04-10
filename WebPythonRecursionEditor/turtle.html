@@ -71,6 +71,7 @@
 	// draw initial set of commands after page loads
 	$(document).ready(function () {
 		drawOnCanvas();
+		saveCustomDrawing();
 	});
 
   	</script>
@@ -228,6 +229,39 @@
 		   }, 300)
 		})(1, depth);
 	}
+
+	
+	load = function () {
+  		return JSON.parse(localStorage["recursionEditor"]);
+	};
+ 
+	save = function(obj) {
+		localStorage["recursionEditor"] = JSON.stringify(obj);
+	};
+	
+	function saveCustomDrawing() {
+
+		// get data of current drawing into an array
+		var newDrawing = [];
+		$.each(cmdsToExecute, function(key, value) {
+			//alert(key + " : " + value[text]);
+			var obj = {key : value[text]};
+			newDrawing.push(obj);
+		});
+		
+		// push this new data onto local storage
+		var data = load();
+		data.push(newDrawing);
+		save(data);
+
+		loaded = load();
+
+		// load values of available commands list
+		$.each(loaded, function(key, value) {
+			//alert(key + " : " + value);
+		});
+	}
+	
 </script>
 </body>
 </html>
