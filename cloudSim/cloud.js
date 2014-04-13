@@ -3,19 +3,24 @@
 
 General notes
 =====================
-1. change the data to be in polar coordinates for easy calculation (create conversion function)
+1. increse effeciency
 
-2. different colors later
+2. different colors
+????????????????????
+
+1. add sound on refract
+2. change cloud shape
+
 
 */
 
 var cloudParticleRadius = 6,
-	numCloudParticles   = 500,
+	numCloudParticles   = 800,
 	cloudParticles      = [],
 	svgHeight           = Math.max(500, innerHeight)-50,
 	svgWidth     	    = Math.max(960, innerWidth)-50,	
 	iterTime			= 1,//length of an iteration cycle in ms
-	rayWidth            = 3,
+	rayWidth            = 2,
 	raySpeed			= 8,//ray speed in px per iteration
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
@@ -28,15 +33,15 @@ var cloudParticleRadius = 6,
 var lineFunction = d3.svg.line()
     .x(function(d) { return d.x; })
     .y(function(d) { return d.y; })
-    .interpolate("basis");
+    .interpolate("qnone");
 
 
 // this creates the cloud
 	// add desired number of particles to cloud array
 	for (var i = 0; i < numCloudParticles; i++) 
 	{
-		x = [Math.random()*svgWidth/2+svgWidth/4]
-		y = [Math.random()*svgHeight/2+svgHeight/4]
+		x = [Math.random()*svgWidth/3+svgWidth/3]
+		y = [Math.random()*svgHeight/3+svgHeight/3]
 		cloudParticles.push([x,y])
 	};
 
@@ -48,15 +53,20 @@ var lineFunction = d3.svg.line()
 		.attr("cx",function(d){return(d[0])})
 		.attr("cy",function(d){return(d[1])})
 		.attr("r",cloudParticleRadius)// offwhite cloud
-		.attr("fill","rgba(255,255,255,.2)");
-
+		.attr("fill","rgba(255,255,255,.5)");
+andf= 1
 // add new light ray
 function addRay() {
+	if (andf ==1)
+	{
+		now = new Date().getTime() / 1000;
+		andf=0
+	}
 	// gets current mouse locvation on the svg
 	var m = d3.mouse(this);
 
 	// adds new ray info to data array
-	rayData.push({lineData:[{x:m[0],y:m[1]},{x:m[0],y:m[1]+10}],class:'activeRay'})
+	rayData.push({lineData:[{x:m[0],y:m[1]},{x:m[0],y:m[1]},{x:m[0],y:m[1]+10}],origin:{x:m[0],y:m[1]},class:'activeRay'})
 	svg.selectAll(".activeRay")
 		.data(rayData)// associate all lines with a value in the rayData array
 		.enter()// d3 magic
@@ -65,7 +75,7 @@ function addRay() {
 		.attr("d", function(d){return(lineFunction(d.lineData))})
 		.attr("class",function(d){return(d.class)})
 		.attr("stroke-width",rayWidth)
-		.attr("stroke","#222");
+		.attr("stroke","rgba(255,250,205,.6)");
 }
 
 // draw updated line
@@ -76,8 +86,10 @@ function replot()
 	{
 
 		var len  = rayData[i].lineData.length-1
-			rayX = rayData[i].lineData[0].x,
+			rayX = rayData[i].lineData[len].x,
 			rayY = rayData[i].lineData[len].y;
+			
+			
 		// loop through all cloud particles
 		for (var j = cloudParticles.length - 1; j >= 0; j--) 
 		{
@@ -87,18 +99,56 @@ function replot()
 				ySeperation = Math.abs(rayY-cloudParticleY);
 			if (xSeperation<cloudParticleRadius && ySeperation<cloudParticleRadius)
 			{
-				rayData[i].lineData.push({x:rayX-(cloudParticleRadius+(rayX-cloudParticleX)),y:rayY})
+				rayData[i].origin = {x:rayX,y:rayY}
+				center = rayData[i].origin
+				x = rayX-center.x
+				y = rayY-center.y
+				polCoords = cartToPol({x:x,y:y})
+
+				polCoords.theta=Math.random()*tau
+				polCoords.r+=cloudParticleRadius*2
+				cartCoords = polToCart(polCoords)
+				cartCoords.x+=center.x
+				cartCoords.y+=center.y
+
+
+				rayData[i].lineData.push(cartCoords)
+				// an attempt at adding noise on collsions
+			// oscillator = context.createOscillator();
+			// oscillator.frequency.value = 500;
+			// // oscillator.type = 4;
+			// oscillator.connect(context.destination);
+			// var seconds = new Date().getTime() / 1000;
+			// oscillator.start(seconds-now);
+			// oscillator.stop(seconds-now+.1)
+			// // delete context
+
+
 			}
 		};
-		len  = rayData[i].lineData.length-1
-		rayData[i].lineData[len].y+=raySpeed
+
+		center = rayData[i].origin
+		x = rayX-center.x
+		y = rayY-center.y
+		polCoords = cartToPol({x:x,y:y})
+		polCoords.r+=raySpeed
+		cartCoords = polToCart(polCoords)
+		cartCoords.x+=center.x
+		cartCoords.y+=center.y
+		rayData[i].lineData[len] = cartCoords
+		// rayData[i].lineData[len].y+=raySpeed
 
 		// if the rayhits the bottom of the svg then leave it there as a little marker (color observation)
-		if (rayY>svgHeight)
+		if (rayY>svgHeight || rayY<0 || rayX>svgWidth || rayX<0)
 		{
-		  rayData[i].lineData[len-1].y=svgHeight-25
+		  rayData[i].lineData[len-1].y=svgHeight
+		  rayData[i].lineData[len].y=svgHeight
+
 		  rayData[i].lineData.splice(0,len-1)
 		  rayData[i].class = 'inactive'
+
+			
+
 		}
 
 		// change the class data so it doesnt keep being looped over after it hits the bottom
@@ -145,3 +195,21 @@ var yScale = d3.scale.linear()
 
 
 window.setInterval(replot,iterTime)
+// try {
+// 	// Fix up for prefixing
+// 	window.AudioContext = window.AudioContext||window.webkitAudioContext;
+// 		context = new AudioContext();
+// 	}
+// 	catch(e) {
+// 		alert('Sorry, your browser doesnt support the "play" button :( \n try the latest firefox or chrome');
+// 	}
+// // ----- functions to listen to morse code -----
+// 	// function to play a tone
+// 	function note(start,length,freq){
+// 		oscillator = context.createOscillator();
+// 		oscillator.frequency.value = freq;
+// 		// oscillator.type = 4;
+// 		oscillator.connect(context.destination);
+// 		oscillator.start(start);
+// 		oscillator.stop(start+length)
+// 		}
