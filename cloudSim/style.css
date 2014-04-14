@@ -1,9 +1,9 @@
-
-body {
-  margin: 0;
-  padding:0px;
-  text-align: center;
+body 
+{
+	margin: 0;
+	padding:0px;
 }
+
 svg
 {
 	background-color: rgba(135,206,235,.8);

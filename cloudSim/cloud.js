@@ -26,7 +26,7 @@ var cloudParticleRadius = 4,
 	raySpeed			= 5,//ray speed in px per iteration
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
-	svg                 = d3.select("body").append("svg")// add the svg element to body
+	svg                 = d3.select("#simulation").append("svg")// add the svg element to body
 							.attr("width" , svgWidth)
 							.attr("height", svgHeight)// send down a light ray on click
 							.on  ("click" , addRay);
