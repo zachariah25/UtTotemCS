@@ -6,7 +6,7 @@ body {
 }
 svg
 {
-	background-color: #87CEEB;
+	background-color: rgba(135,206,235,.8);
 	margin:0px auto;
 	margin-top:25px;
 	box-shadow: 0 0 25px rgba(0,0,0,.8);

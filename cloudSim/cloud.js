@@ -14,14 +14,16 @@ General notes
 
 */
 
-var cloudParticleRadius = 6,
-	numCloudParticles   = 800,
+var cloudParticleRadius = 4,
+	numCloudParticles   = 500,
 	cloudParticles      = [],
+	cloudColor          = "rgba(255,255,255,.4)",
 	svgHeight           = Math.max(500, innerHeight)-50,
 	svgWidth     	    = Math.max(960, innerWidth)-50,	
-	iterTime			= 1,//length of an iteration cycle in ms
+	iterTime			= 10,//length of an iteration cycle in ms
 	rayWidth            = 2,
-	raySpeed			= 8,//ray speed in px per iteration
+	rayColor            = "rgba(255,250,205,.6)",
+	raySpeed			= 5,//ray speed in px per iteration
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
 	svg                 = d3.select("body").append("svg")// add the svg element to body
@@ -33,15 +35,15 @@ var cloudParticleRadius = 6,
 var lineFunction = d3.svg.line()
     .x(function(d) { return d.x; })
     .y(function(d) { return d.y; })
-    .interpolate("qnone");
+    .interpolate("none");
 
 
 // this creates the cloud
 	// add desired number of particles to cloud array
 	for (var i = 0; i < numCloudParticles; i++) 
 	{
-		x = [Math.random()*svgWidth/3+svgWidth/3]
-		y = [Math.random()*svgHeight/3+svgHeight/3]
+		x = Math.random()*svgWidth/3+svgWidth/3
+		y = Math.random()*svgHeight/3+svgHeight/3
 		cloudParticles.push([x,y])
 	};
 
@@ -52,21 +54,29 @@ var lineFunction = d3.svg.line()
 		.append("circle")
 		.attr("cx",function(d){return(d[0])})
 		.attr("cy",function(d){return(d[1])})
-		.attr("r",cloudParticleRadius)// offwhite cloud
-		.attr("fill","rgba(255,255,255,.5)");
-andf= 1
+		.attr("r",cloudParticleRadius)
+		.attr("fill",cloudColor);// offwhite cloud
+
 // add new light ray
 function addRay() {
-	if (andf ==1)
-	{
-		now = new Date().getTime() / 1000;
-		andf=0
-	}
+
 	// gets current mouse locvation on the svg
 	var m = d3.mouse(this);
 
 	// adds new ray info to data array
-	rayData.push({lineData:[{x:m[0],y:m[1]},{x:m[0],y:m[1]},{x:m[0],y:m[1]+10}],origin:{x:m[0],y:m[1]},class:'activeRay'})
+	rayData.push(
+		{
+			lineData:
+			[
+				{x:m[0],y:m[1]},
+				{x:m[0],y:m[1]+10}
+			],
+			origin:
+			{x:m[0],y:m[1]},
+			class:'activeRay',
+			color:'rgba(255,255,255,.5)',
+			refract:true
+		})
 	svg.selectAll(".activeRay")
 		.data(rayData)// associate all lines with a value in the rayData array
 		.enter()// d3 magic
@@ -75,68 +85,103 @@ function addRay() {
 		.attr("d", function(d){return(lineFunction(d.lineData))})
 		.attr("class",function(d){return(d.class)})
 		.attr("stroke-width",rayWidth)
-		.attr("stroke","rgba(255,250,205,.6)");
+		.attr("stroke",function(d){return(d.color)});
 }
+
+function refract(origin,angle,increment,color)
+{
+	polCoords = {r: cloudParticleRadius*2,theta:angle+increment}
+	cartCoords = polToCart(polCoords)
+	cartCoords.x+=origin.x
+	cartCoords.y+=origin.y
+
+	rayData.push({lineData:[{x:origin.x,y:origin.y},{x:cartCoords.x,y:cartCoords.y+.0001}],origin:{x:origin.x,y:origin.y},class:'activeRay',color:color,refract:false})
+	svg.selectAll(".activeRay")
+		.data(rayData)// associate all lines with a value in the rayData array
+		.enter()// d3 magic
+		.append("path")
+		.attr("fill", "none")
+		.attr("d", function(d){return(lineFunction(d.lineData))})
+		.attr("class",function(d){return(d.class)})
+		.attr("stroke-width",rayWidth)
+		.attr("stroke",rayColor);
+}
+
+
 
 // draw updated line
 function replot()
 {
+
 	// loop through all light rays
 	for (var i = rayData.length - 1; i >= 0; i--)
 	{
+		amnfdg = true
 
-		var len  = rayData[i].lineData.length-1
+		var len  = rayData[i].lineData.length-1,
 			rayX = rayData[i].lineData[len].x,
 			rayY = rayData[i].lineData[len].y;
 			
 			
 		// loop through all cloud particles
-		for (var j = cloudParticles.length - 1; j >= 0; j--) 
+		for (var j = cloudParticles.length -1; j>=0 ;j--) 
 		{
 			var cloudParticleX = cloudParticles[j][0],
 				cloudParticleY = cloudParticles[j][1],
-				xSeperation = Math.abs(rayX-cloudParticleX),
-				ySeperation = Math.abs(rayY-cloudParticleY);
+				xSeperation    = Math.abs(rayX-cloudParticleX),
+				ySeperation    = Math.abs(rayY-cloudParticleY);
+
+			
+
 			if (xSeperation<cloudParticleRadius && ySeperation<cloudParticleRadius)
 			{
 				rayData[i].origin = {x:rayX,y:rayY}
 				center = rayData[i].origin
-				x = rayX-center.x
-				y = rayY-center.y
-				polCoords = cartToPol({x:x,y:y})
 
+				polCoords = {r:.1,theta:0}
 				polCoords.theta=Math.random()*tau
-				polCoords.r+=cloudParticleRadius*2
+				// polCoords.theta=.8
+				polCoords.r+=cloudParticleRadius*2.5
 				cartCoords = polToCart(polCoords)
 				cartCoords.x+=center.x
 				cartCoords.y+=center.y
 
 
 				rayData[i].lineData.push(cartCoords)
-				// an attempt at adding noise on collsions
-			// oscillator = context.createOscillator();
-			// oscillator.frequency.value = 500;
-			// // oscillator.type = 4;
-			// oscillator.connect(context.destination);
-			// var seconds = new Date().getTime() / 1000;
-			// oscillator.start(seconds-now);
-			// oscillator.stop(seconds-now+.1)
-			// // delete context
+				if (rayData[i].refract)
+				{
+					// rayData[i].lineData.splice(0,len-1)
+			  		// rayData[i].class = 'inactive'
+			  		rayData[i].refract = false
+					refract(center,polCoords.theta,tau/500,"rgba(255,0,0,.2)")
+					refract(center,polCoords.theta,2*tau/500,"rgba(255,127,0,.2)")
+					refract(center,polCoords.theta,3*tau/500,"rgba(255,255,0,.2)")
+					refract(center,polCoords.theta,4*tau/500,"rgba(0,255,0,.2)")
+					refract(center,polCoords.theta,5*tau/500,"rgba(0,0,255,.2)")
+					refract(center,polCoords.theta,6*tau/500,"rgba(75,0,255,.2)")
+				}
+				amnfdg = false
 
 
 			}
+
+			// var len  = rayData[i].lineData.length-1;
+			center = rayData[i].origin
+			x = rayX-center.x
+			y = rayY-center.y
+			polCoords = cartToPol({x:x,y:y})
+			if (amnfdg)
+			{polCoords.r+=raySpeed;amnfdg = true}
+			
+			cartCoords = polToCart(polCoords)
+			cartCoords.x+=center.x
+			cartCoords.y+=center.y
+			rayData[i].lineData[len] = cartCoords
 		};
 
-		center = rayData[i].origin
-		x = rayX-center.x
-		y = rayY-center.y
-		polCoords = cartToPol({x:x,y:y})
-		polCoords.r+=raySpeed
-		cartCoords = polToCart(polCoords)
-		cartCoords.x+=center.x
-		cartCoords.y+=center.y
-		rayData[i].lineData[len] = cartCoords
-		// rayData[i].lineData[len].y+=raySpeed
+
+
+		
 
 		// if the rayhits the bottom of the svg then leave it there as a little marker (color observation)
 		if (rayY>svgHeight || rayY<0 || rayX>svgWidth || rayX<0)
@@ -161,7 +206,8 @@ function replot()
 	// update svg with new data
 	svg.selectAll(".activeRay")
 		.attr("d", function(d){return(lineFunction(d.lineData))})
-		.attr("class",function(d){return(d.class)});//this actualy changes the class
+		.attr("class",function(d){return(d.class)})
+		.attr("stroke",function(d){return(d.color)});//this actualy changes the class
 };
 
 
