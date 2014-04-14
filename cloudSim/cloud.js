@@ -3,9 +3,9 @@
 
 General notes
 =====================
-1. increse effeciency
+1. reset origin at more accurate location
+2. increase efficiency
 
-2. different colors
 ????????????????????
 
 1. add sound on refract
@@ -22,7 +22,7 @@ var cloudParticleRadius = 4,
 	svgWidth     	    = Math.max(960, innerWidth)-50,	
 	iterTime			= 10,//length of an iteration cycle in ms
 	rayWidth            = 2,
-	rayColor            = "rgba(255,250,205,.6)",
+	rayColor            = "#FFCC00",
 	raySpeed			= 5,//ray speed in px per iteration
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
@@ -36,6 +36,12 @@ var lineFunction = d3.svg.line()
     .x(function(d) { return d.x; })
     .y(function(d) { return d.y; })
     .interpolate("none");
+
+svg.append("circle")
+	.attr("cx", svgWidth/2)
+	.attr("cy", -500)
+	.attr("r", 550)
+	.style("fill", "#FFCC00");
 
 
 // this creates the cloud
@@ -112,6 +118,39 @@ function refract(origin,angle,increment,color)
 // draw updated line
 function replot()
 {
+	x = Math.floor(Math.random()*50)
+	if (x==4)
+	{
+
+			x = Math.random()*svgWidth/3+svgWidth/3
+			y = Math.sqrt(Math.pow(500,2) -Math.pow(x-svgWidth/2,2))-450
+			var m = [x,y]
+
+		// adds new ray info to data array
+		rayData.push(
+		{
+			lineData:
+			[
+				{x:m[0],y:m[1]},
+				{x:m[0],y:m[1]+10}
+			],
+			origin:
+			{x:m[0],y:m[1]},
+			class:'activeRay',
+			color:'rgba(255,255,255,.5)',
+			refract:true
+		})
+	svg.selectAll(".activeRay")
+		.data(rayData)// associate all lines with a value in the rayData array
+		.enter()// d3 magic
+		.append("path")
+		.attr("fill", "none")
+		.attr("d", function(d){return(lineFunction(d.lineData))})
+		.attr("class",function(d){return(d.class)})
+		.attr("stroke-width",rayWidth)
+		.attr("stroke",function(d){return(d.color)});
+
+	}
 
 	// loop through all light rays
 	for (var i = rayData.length - 1; i >= 0; i--)
