@@ -3,28 +3,27 @@
 
 
 ????????????????????
-2. change cloud shape
+
 
 
 */
 
 var cloudParticleRadius = 8,
-	aparantRadius       =30;
+	aparantRadius       = 3*cloudParticleRadius;
 	numCloudParticles   = 300,
 	cloudParticles      = [],
 	cloudColor          = "rgba(255,255,255,.4)",
-	svgHeight           = Math.max(500, innerHeight)-5,
-	svgWidth     	    = Math.max(960, innerWidth)-20,	
+	svgHeight           = Math.max(500, innerHeight),
+	svgWidth     	    = Math.max(960, innerWidth),	
 	iterTime			= 10,//length of an iteration cycle in ms
 	rayWidth            = 7,
 	rayColor            = "rgba(255,255,255,.5)",
-	raySpeed			= 7,//ray speed in px per iteration
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
-	dTheta              = tau/400,
+	dTheta              = tau/40,
 	svg                 = d3.select("#cloudSim")// add the svg element to body
-							.attr("width" , svgWidth)
-							.attr("height", svgHeight)// send down a light ray on click
+							// .attr("width" , svgWidth)
+							// .attr("height", svgHeight)// send down a light ray on click
 							.on  ("click" , function() 
 								{
 									var m = d3.mouse(this);// gets current mouse locvation on the svg
@@ -112,28 +111,32 @@ function addRay(origin,angle,r,color,refract)
 		.attr("fill", "none")
 		.attr("d", function(d){return(lineFunction(d.lineData))})
 		.attr("class",function(d){return(d.class)})
-		.attr("stroke-width",rayWidth)
+		.attr("stroke-width",get('rayWidth'))
 		.attr("stroke",function(d){return(d.color)});
 };
 
+function get(el)
+{
+	return(parseInt(document.getElementById(el).value))
+}
 function refract(origin,theta,dTheta)
 {
-	addRay(origin , theta+dTheta   , cloudParticleRadius*2 ,"rgba(255,0,0,.2)"   , false)
-	addRay(origin , theta+2*dTheta , cloudParticleRadius*2 ,"rgba(255,127,0,.2)" , false)
-	addRay(origin , theta+3*dTheta , cloudParticleRadius*2 ,"rgba(255,255,0,.2)" , false)
-	addRay(origin , theta+4*dTheta , cloudParticleRadius*2 ,"rgba(0,255,0,.2)"   , false)
-	addRay(origin , theta+5*dTheta , cloudParticleRadius*2 ,"rgba(0,0,255,.2)"   , false)
-	addRay(origin , theta+6*dTheta , cloudParticleRadius*2 ,"rgba(143,0,255,.2)" , false)
+	addRay(origin , theta+dTheta   , cloudParticleRadius*2 ,"rgba(255,0,0,.25)"   , false)
+	addRay(origin , theta+2*dTheta , cloudParticleRadius*2 ,"rgba(255,127,0,.25)" , false)
+	addRay(origin , theta+3*dTheta , cloudParticleRadius*2 ,"rgba(255,255,0,.25)" , false)
+	addRay(origin , theta+4*dTheta , cloudParticleRadius*2 ,"rgba(0,255,0,.25)"   , false)
+	addRay(origin , theta+5*dTheta , cloudParticleRadius*2 ,"rgba(0,0,255,.25)"   , false)
+	addRay(origin , theta+6*dTheta , cloudParticleRadius*2 ,"rgba(143,0,255,.25)" , false)
 }
 
 function sun(frequency)
 {
 	randomInt = Math.random()
-	if (randomInt<=frequency)
+	if (randomInt<=get('sunyness')/50)
 	{
 	
 		var origin = {x:svgWidth/2,y:0}
-		theta = Math.random()*tau
+		theta = Math.random()*tau/2
 		addRay(origin,theta,.01,rayColor,true)
 	}
 }
@@ -188,7 +191,8 @@ function replot()
 			polCoords = cartToPol({x:x,y:y})
 			if (hasNotColided)
 			{
-				polCoords.r+=raySpeed;
+				ds = get('raySpeed')
+				polCoords.r+=ds;
 				hasNotColided = true
 			}
 			cartCoords = polToCart(polCoords)
@@ -211,6 +215,7 @@ function replot()
 	svg.selectAll(".activeRay")
 		.attr("d", function(d){return(lineFunction(d.lineData))})
 		.attr("stroke", function(d){return(d.color)})
+		.attr("stroke-width",get('rayWidth'))
 		.attr("class",function(d){return(d.class)});
 
 	svg.selectAll("#sun").remove()
@@ -259,3 +264,17 @@ var yScale = d3.scale.linear()
 
 
 window.setInterval(replot,iterTime)
+
+
+function openClose(el){
+	el = document.getElementById(el)
+	if (el.className.indexOf("down") == -1)
+	{
+		el.className += ' down'
+	}
+
+	else if (el.className.indexOf("down") != -1)
+	{
+		el.className = el.className.replace(/ down/g, '')
+	}
+}

@@ -10,14 +10,30 @@
 		<link rel="shortcut icon" href="favicon.ico">
 
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		
 		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="button.css">
+		<link href='http://fonts.googleapis.com/css?family=Megrim' rel='stylesheet' type='text/css'>
 	</head>
 <body>
-	<div id = 'simulation'>
 		<svg id = 'cloudSim'>
 		</svg>
-	</div>
+		<ul id = 'settings' class="menu" >
+	    <li>
+	      <span class = 'title' onclick = "openClose('settings')">Options</span>
+
+	        <ul class="sub-menu">
+	            <li onclick = "">
+	                sunnyness <input  id = 'sunyness' value = 1 type = 'range' min="0" max="10"></input>
+	            </li>
+	            <li onclick = "">
+	                ray thickness <input id = 'rayWidth' value = 7 type = 'range' ></input>
+	            </li>
+	            <li >
+	                ray speed <input id = 'raySpeed' value = 7 type = 'range' min="0" max="50"></input>
+	            </li>
+	        </ul>
+	    </li>
+	</ul>
 </body>
 <script type="text/javascript" src = 'cloud.js'></script>
 </html>
