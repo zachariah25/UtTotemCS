@@ -20,7 +20,7 @@ var cloudParticleRadius = 8,
 	rayColor            = "rgba(255,255,255,.5)",
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
-	dTheta              = tau/40,
+	dTheta              = tau/400,
 	svg                 = d3.select("#cloudSim")// add the svg element to body
 							// .attr("width" , svgWidth)
 							// .attr("height", svgHeight)// send down a light ray on click
@@ -31,7 +31,7 @@ var cloudParticleRadius = 8,
 									addRay(origin,tau/4,10,rayColor,true)
 								});
 
-
+document.getElementById('raySpeed').value = '7'
 var lineFunction = d3.svg.line()
     .x(function(d) { return d.x; })
     .y(function(d) { return d.y; })
@@ -117,7 +117,7 @@ function addRay(origin,angle,r,color,refract)
 
 function get(el)
 {
-	return(parseInt(document.getElementById(el).value))
+	return(parseFloat(document.getElementById(el).value))
 }
 function refract(origin,theta,dTheta)
 {
@@ -192,6 +192,7 @@ function replot()
 			if (hasNotColided)
 			{
 				ds = get('raySpeed')
+				// ds = 7
 				polCoords.r+=ds;
 				hasNotColided = true
 			}
