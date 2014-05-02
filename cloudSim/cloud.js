@@ -226,6 +226,9 @@ function replot()
 	.attr("r", 100)
 	.attr('id','sun')
 	.style("fill", "#FFCC00");
+
+	svg.selectAll('.cloud')
+	.attr('r',get('radius'))
 };
 
 function collectLightRay(ray,i)
