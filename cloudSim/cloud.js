@@ -1,22 +1,16 @@
 /*
 (C) 2014 Jackson Henry
 
-General notes
-=====================
-1. reset origin at more accurate location
-2. increase efficiency
-3.
 
 ????????????????????
-
-1. add sound on refract
 2. change cloud shape
 
 
 */
 
-var cloudParticleRadius = 10,
-	numCloudParticles   = 500,
+var cloudParticleRadius = 8,
+	aparantRadius       =30;
+	numCloudParticles   = 300,
 	cloudParticles      = [],
 	cloudColor          = "rgba(255,255,255,.4)",
 	svgHeight           = Math.max(500, innerHeight)-5,
@@ -28,7 +22,7 @@ var cloudParticleRadius = 10,
 	rayData             = [],//data for each lightray
 	tau                 = 2*Math.PI,//used for conversion and polar coordinates
 	dTheta              = tau/400,
-	svg                 = d3.select("#simulation").append("svg")// add the svg element to body
+	svg                 = d3.select("#cloudSim")// add the svg element to body
 							.attr("width" , svgWidth)
 							.attr("height", svgHeight)// send down a light ray on click
 							.on  ("click" , function() 
@@ -46,19 +40,37 @@ var lineFunction = d3.svg.line()
 
 svg.append("circle")
 	.attr("cx", svgWidth/2)
-	.attr("cy", -500)
-	.attr("r", 550)
+	.attr("cy", 0)
+	.attr("r", 100)
+	.attr('id','sun')
 	.style("fill", "#FFCC00");
 
 
 // this creates the cloud
 // add desired number of particles to cloud array
-for (var i = 0; i < numCloudParticles; i++) 
-{
-	x = Math.random()*svgWidth/3+svgWidth/3
-	y = Math.random()*svgHeight/3+svgHeight/3
-	cloudParticles.push([x,y])
-};
+	for (var i = 0; i < Math.floor(numCloudParticles/3); i++) 
+	{
+		r     = Math.random()*250
+		theta = Math.random()*tau
+		cart  = polToCart({r:r,theta:theta})
+		cloudParticles.push([cart.x+svgWidth/2,cart.y+svgHeight/2])
+	};
+
+	for (var i = 0; i < Math.floor(numCloudParticles/3); i++) 
+	{
+		r     = Math.random()*200
+		theta = Math.random()*tau
+		cart  = polToCart({r:r,theta:theta})
+		cloudParticles.push([cart.x+svgWidth/3,cart.y+svgHeight/2])
+	};
+
+	for (var i = 0; i < Math.floor(numCloudParticles/3); i++) 
+	{
+		r     = Math.random()*200
+		theta = Math.random()*tau
+		cart  = polToCart({r:r,theta:theta})
+		cloudParticles.push([cart.x+2*svgWidth/3,cart.y+svgHeight/2])
+	};
 
 // add a particle to the svg for each particle in the array
 svg.selectAll("circle")
@@ -67,7 +79,8 @@ svg.selectAll("circle")
 	.append("circle")
 	.attr("cx",function(d){return(d[0])})
 	.attr("cy",function(d){return(d[1])})
-	.attr("r",cloudParticleRadius)
+	.attr("r",aparantRadius)
+	.attr('class','cloud')
 	.attr("fill",cloudColor);
 
 
@@ -118,10 +131,10 @@ function sun(frequency)
 	randomInt = Math.random()
 	if (randomInt<=frequency)
 	{
-		x = Math.random()*svgWidth/3+svgWidth/3
-		y = Math.sqrt(Math.pow(500,2) -Math.pow(x-svgWidth/2,2))-450
-		var origin = {x:x,y:y}
-		addRay(origin,tau/4,.01,rayColor,true)
+	
+		var origin = {x:svgWidth/2,y:0}
+		theta = Math.random()*tau
+		addRay(origin,theta,.01,rayColor,true)
 	}
 }
 
@@ -188,15 +201,25 @@ function replot()
 		if (rayY>svgHeight || rayY<0 || rayX>svgWidth || rayX<0)
 		{
 			collectLightRay(rayData[i],i)
+			svg.selectAll('.inactive').remove()
 		  
 		}
 	}
+
 
 	// update svg with new data
 	svg.selectAll(".activeRay")
 		.attr("d", function(d){return(lineFunction(d.lineData))})
 		.attr("stroke", function(d){return(d.color)})
 		.attr("class",function(d){return(d.class)});
+
+	svg.selectAll("#sun").remove()
+	svg.append("circle")
+	.attr("cx", svgWidth/2)
+	.attr("cy", 0)
+	.attr("r", 100)
+	.attr('id','sun')
+	.style("fill", "#FFCC00");
 };
 
 function collectLightRay(ray,i)

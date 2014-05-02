@@ -2,15 +2,55 @@ body
 {
 	margin: 0;
 	padding:0px;
-	background-color: rgba(135,206,235,0);
+	background:#EEE;
+
 }
 
-#simulation
+.cloud
 {
 }
 svg
 {
 	background-color: rgba(135,206,235,.8);
-	/*box-shadow: 0 0 25px rgba(0,0,0,.8);*/
+	-webkit-filter: blur(1px);
 	-webkit-transform: translate3d(0, 0, 0);
+}
+
+
+#cloud {
+	width: 350px; height: 120px;
+	
+	background: #FFF;
+	
+	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	
+	position: relative;
+	margin: 120px auto 20px;
+}
+
+#cloud:after, #cloud:before {
+	content: '';
+	position: absolute;
+	background: #FFF;
+	z-index: -1
+}
+
+#cloud:after {
+	width: 100px; height: 100px;
+	top: -50px; left: 50px;
+	
+	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+}
+
+#cloud:before {
+	width: 180px; height: 180px;
+	top: -90px; right: 50px;
+	
+	border-radius: 200px;
+	-webkit-border-radius: 200px;
+	-moz-border-radius: 200px;
 }
