@@ -50,7 +50,15 @@ canvas
 
 
 
+#pause
+{
+	cursor:pointer;
+}
 
+#reset
+{
+	cursor:pointer;
+}
 
 
 body ,html

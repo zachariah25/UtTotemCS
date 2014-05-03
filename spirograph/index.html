@@ -13,14 +13,14 @@
 		      <span class = 'title' onclick = "openClose('settings')">Options</span>
 
 		        <ul class="sub-menu">
-		        	<li onclick = 'pause'>
+		        	<li id = 'pause' onclick = 'pause()'>
 		                pause 
 		            </li>
-		            <li onclick = 'clear'>
+		            <li id = 'reset' onclick = 'reset()'>
 		                reset
 		            </li>
 		            <li>
-		                Speed <input  id = 'speed' value = .01 type = 'range' min="0.00000000000000000000000000001" max=".0314159" step = '.001'></input>
+		                Speed <input  id = 'speed' value = .01 type = 'range' min="0.00000000000000000000000000001" max   = ".0314159" step = '.001'></input>
 		            </li>
 		            
 		            <li>

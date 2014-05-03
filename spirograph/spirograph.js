@@ -35,7 +35,35 @@ function get(el)
 
 function pause()
 {
-    document.getElementById('speed').value = '0'
+    s = document.getElementById('speed')
+    p = document.getElementById('pause')
+
+    if (p.innerHTML.indexOf("pause") != -1)
+    {
+        s.value = '0';
+        p.innerHTML= 'go'
+    }
+
+    else if (p.innerHTML.indexOf("go") != -1)
+    {
+        s.value = '.01';
+        p.innerHTML= 'pause'
+    }
+// pause reset Speed Circle 1 Radius Circle 2 Radius 
+}
+
+
+function reset()
+{
+     // var dataURL = canvas[0][0].toDataURL();
+     // window.open(document.getElementById('cvs').toDataURL(), 'new_window', 'width=310,height=30')
+     // <img src="data:image/png;base64,iVBORw0KGgoAAAA ... ">
+    ctx.clearRect(00,0,10000,5000);
+    ctx2.clearRect(0,0,10000,5000);
+    canvas[0][0].width = canvas[0][0].width
+    canvas2[0][0].width = canvas[0][0].width
+    ctx.save();
+    canvas[0][0].img.src = dataURL
 }
 
 function changePointerLoc()
@@ -150,9 +178,4 @@ function openClose(el){
     {
         el.className = el.className.replace(/ down/g, '')
     }
-}
-
-function pause()
-{
-    document.getElementById('speed').value = '0'
 }
