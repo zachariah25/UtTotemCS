@@ -12,7 +12,7 @@ var canvasWidth        = Math.min(2/3*innerWidth,innerHeight-250),
     largeOmega      = .001,
     rotationAngle   = 0,
     pointerLocation = [],
-    lineWidth       = .05,
+    lineWidth       = 1,
     lineColor       = ' RGBA(255,255,255,.5)',
     canvas          = d3.select("#a").append("canvas")
         .attr("width", canvasWidth)
