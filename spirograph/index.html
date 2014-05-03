@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="button.css">
+		<link href='http://fonts.googleapis.com/css?family=Bree+Serif' rel='stylesheet' type='text/css'>
+<body>
+	<ul id = 'settings' class="menu" >
+		    <li>
+		      <span class = 'title' onclick = "openClose('settings')">Options</span>
+
+		        <ul class="sub-menu">
+		        	<li onclick = 'pause'>
+		                pause 
+		            </li>
+		            <li onclick = 'clear'>
+		                reset
+		            </li>
+		            <li>
+		                Speed <input  id = 'speed' value = .01 type = 'range' min="0.00000000000000000000000000001" max=".0314159" step = '.001'></input>
+		            </li>
+		            
+		            <li>
+		                Circle 1 Radius
+		                <input id = 'smallR' value = .1 type = 'range'></input>
+		            </li>
+		            <li>
+		                Circle 2 Radius
+		                <input id = 'tinyR' value = .1 type = 'range'></input>
+		            </li>
+		        </ul>
+		    </li>
+		</ul>
+	<div id = 'a'>
+	</div>
+</body>
+<script src="spirograph.js" charset="utf-8"></script>
+</html>
